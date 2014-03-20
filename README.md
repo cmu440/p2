@@ -2,10 +2,56 @@ p2
 ==
 
 This repository contains the starter code for project 2 (15-440, Spring 2014). These instructions
-assume you have set your `GOPATH` to point to the repository's root `p2/` directory.
+assume you have set your `GOPATH` accordingly:
+
+```sh
+# For bash users.
+export GOPATH=/path/to/p2
+
+# For tcsh users.
+setenv GOPATH=/path/to/p2
+```
 
 This project was designed for, and tested on AFS cluster machines, though you may choose to
 write and build your code locally as well.
+
+## Starter Code
+
+The starter code for this project is organized roughly as follows:
+
+```
+bin/                               Student-compiled binaries
+
+sols/                              Staff-compiled binaries
+  darwin_amd64/                    Mac OS X executables
+    crunner-sols                   Reference impl of TribClient-runner
+    trunner-sols                   Reference impl of TribServer-runner
+    lrunner-sols                   Reference impl of Libstore-runner
+    srunner-sols                   Reference impl of StorageServer-runner
+
+  linux_amd64/                     Linux executables
+    (see above)
+
+src/github.com/cmu440/tribbler/
+  tribclient/                      TribClient implementation
+  tribserver/                      TODO: implement the TribServer
+  libstore/                        TODO: implement the Libstore
+  storageserver/                   TODO: implement the StorageServer
+
+  tests/                           Source code for official tests
+    proxycounter/                  Utility package used by the official tests
+    tribtest/                      Tests the TribServer
+    libtest/                       Tests the Libstore
+    storagetest/                   Tests the StorageServer
+    stresstest/                    Tests everything
+  
+  rpc/
+    tribrpc/                       TribServer RPC
+    librpc/                        Libstore RPC
+    storagerpc/                    StorageServer RPC
+    
+tests/                             Executable shell scripts to run the tests.
+
 
 ## Instructions
 
@@ -32,7 +78,9 @@ go build path/to/tribserver
 go build github.com/cmu440/tribbler/tribserver
 ```
 
-*IMPORTANT NOTE*: If at any point you have any trouble with building, installing, or testing your code, the article
+#### How to Write Go Code
+
+If at any point you have any trouble with building, installing, or testing your code, the article
 titled [How to Write Go Code](http://golang.org/doc/code.html) is a great resource for understanding
 how Go workspaces are built and organized. You might also find the documentation for the
 [`go` command](http://golang.org/cmd/go/) to be helpful. As always, feel free to post your questions
@@ -45,60 +93,73 @@ four simple programs that aim to simplify the process. The programs are located 
 `tribbler/runners/` directory and may be executed from anywhere on your system.
 Each program is discussed individually below:
 
-* The `srunner` (storage server-runner) program creates and runs an instance of your
-  `StorageServer` implementation. Some example usage is provided below:
+#### `srunner`
 
-  ```bash
-  # Start a single master storage server on port 9009.
-  ./srunner -port=9009 -N=1
+The `srunner` (`StorageServer`-runner) program creates and runs an instance of your
+`StorageServer` implementation. Some example usage is provided below:
 
-  # Start the master on port 9009 and run two additional slaves.
-  ./srunner -port=9009 -N=3
-  ./srunner -master="localhost:9009"
-  ./srunner -master="localhost:9009"
-   ```
-  Note that in the above example you do not need to specify a port for your slave storage servers.
-  For additional usage instructions, please execute `./srunner -help` or consult the `srunner.go` source code.   
+```bash
+# Start a single master storage server on port 9009.
+./srunner -port=9009 -N=1
 
-* The `lrunner` (Libstore-runner) program creates and runs an instance of your `Libstore`
-   implementation. It enables you to execute `Libstore` methods from the command line, as shown
-   in the example below:
+# Start the master on port 9009 and run two additional slaves.
+./srunner -port=9009 -N=3
+./srunner -master="localhost:9009"
+./srunner -master="localhost:9009"
+```
 
-  ```bash
-  # Create a one (or more) storage servers in the background.
-  ./srunner -port=9009 -N=1 &
+Note that in the above example you do not need to specify a port for your slave storage servers.
+For additional usage instructions, please execute `./srunner -help` or consult the `srunner.go` source code.   
 
-  # Execute Put("thom", "yorke")
-  ./lrunner -port=9009 p thom yorke  
-  OK                                 
-  # Execute Get("thom")
-  ./lrunner -port=9009 g thom 
-  yorke
-  # Execute Get("jonny")
-  ./lrunner -port=9009 g jonny
-  ERROR: Get operation failed with status KeyNotFound
-  ```
+#### `lrunner`
 
-  Note that the exact error messages that are output by the `lrunner` program may differ
-  depending on how your `Libstore` implementation. For additional usage instructions, please
-  execute `./lrunner -help` or consult the `lrunner.go` source code.
+The `lrunner` (`Libstore`-runner) program creates and runs an instance of your `Libstore`
+implementation. It enables you to execute `Libstore` methods from the command line, as shown
+in the example below:
 
-* The `trunner` (Tribbler server-runner) program creates and runs an instance of your
-  `TribServer` implementation. For usage instructions, please execute `./trunner -help` or consult the
-  `trunner.go` source code. In order to use this program for your own personal testing,
-  you're `Libstore` implementation must function properly and one or more storage servers
-  (i.e. `srunner` programs) must be running in the background.
+```bash
+# Create a one (or more) storage servers in the background.
+./srunner -port=9009 -N=1 &
+
+# Execute Put("thom", "yorke")
+./lrunner -port=9009 p thom yorke  
+OK                                 
+
+# Execute Get("thom")
+./lrunner -port=9009 g thom 
+yorke
+
+# Execute Get("jonny")
+./lrunner -port=9009 g jonny
+ERROR: Get operation failed with status KeyNotFound
+```
+
+Note that the exact error messages that are output by the `lrunner` program may differ
+depending on how your `Libstore` implementation. For additional usage instructions, please
+execute `./lrunner -help` or consult the `lrunner.go` source code.
+
+#### `trunner`
+
+The `trunner` (`TribServer`-runner) program creates and runs an instance of your
+`TribServer` implementation. For usage instructions, please execute `./trunner -help` or consult the
+`trunner.go` source code. In order to use this program for your own personal testing,
+you're `Libstore` implementation must function properly and one or more storage servers
+(i.e. `srunner` programs) must be running in the background.
    
-* The `crunner` (Tribbler client-runner) program creates and runs an instance of the
-  `TribClient` implementation we have provided as part of the starter code.
-  For usage instructions, please execute `./crunner -help` or consult the
-  `crunner.go` source code. As with the above programs, you'll need to start one or
-  more Tribbler servers and storage servers beforehand so that the `TribClient`
-  will have someone to communicate with.
+#### `crunner`
+
+The `crunner` (`TribClient`-runner) program creates and runs an instance of the
+`TribClient` implementation we have provided as part of the starter code.
+For usage instructions, please execute `./crunner -help` or consult the
+`crunner.go` source code. As with the above programs, you'll need to start one or
+more Tribbler servers and storage servers beforehand so that the `TribClient`
+will have someone to communicate with.
+
+#### Staff-compiled binaries
 
 Last but not least, we have also provided pre-compiled binaries (i.e. each were compiled against our the course
 staff's reference solution) for each of the programs discussed above.
-The binaries are located in the `p2/sols` directory and have been compiled against both 64-bit Mac OS X
+The binaries are located in the `p2/sols/` directory and have been compiled against both 64-bit Mac OS X
 and Linux machines.
 
 ### Executing the official tests
