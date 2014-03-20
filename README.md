@@ -168,7 +168,7 @@ they are being executed on a 64-bit Mac OS X or Linux machine). For example, to 
 ```
 
 Note that these bash scripts link against both your own implementations as well as the test
-code located in the `p2/srcgithub.com/cmu440/tribbler/tests/` directory. What's more, a few of these tests
+code located in the `p2/src/github.com/cmu440/tribbler/tests/` directory. What's more, a few of these tests
 will also run against the staff-solution binaries discussed above,
 thus enabling us to test the correctness of individual components of your system
 as opposed to your entire Tribbler system as a whole.
