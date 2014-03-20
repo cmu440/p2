@@ -16,13 +16,13 @@ The starter code for this project is organized roughly as follows:
 bin/                               Student-compiled binaries
 
 sols/                              Staff-compiled binaries
-  darwin_amd64/                    Mac OS X executables
-    crunner-sols                   Reference impl of TribClient-runner
-    trunner-sols                   Reference impl of TribServer-runner
-    lrunner-sols                   Reference impl of Libstore-runner
-    srunner-sols                   Reference impl of StorageServer-runner
+  darwin_amd64/                    Staff-compiled Mac OS X executables
+    crunner                        Staff-compiled TribClient-runner
+    trunner                        Staff-compiled TribServer-runner
+    lrunner                        Staff-compiled Libstore-runner
+    srunner                        Staff-compiled StorageServer-runner
 
-  linux_amd64/                     Linux executables
+  linux_amd64/                     Staff-compiled Linux executables
     (see above)
 
 src/github.com/cmu440/tribbler/
@@ -39,9 +39,9 @@ src/github.com/cmu440/tribbler/
     stresstest/                    Tests everything
   
   rpc/
-    tribrpc/                       TribServer RPC
-    librpc/                        Libstore RPC
-    storagerpc/                    StorageServer RPC
+    tribrpc/                       TribServer RPC helpers/constants
+    librpc/                        Libstore RPC helpers/constants
+    storagerpc/                    StorageServer RPC helpers/constants
     
 tests/                             Shell scripts to run the tests
 ```
@@ -71,7 +71,7 @@ go build path/to/tribserver
 go build github.com/cmu440/tribbler/tribserver
 ```
 
-#### How to Write Go Code
+##### How to Write Go Code
 
 If at any point you have any trouble with building, installing, or testing your code, the article
 titled [How to Write Go Code](http://golang.org/doc/code.html) is a great resource for understanding
@@ -83,10 +83,10 @@ on Piazza.
 
 To run and test the individual components that make up the Tribbler system, we have provided
 four simple programs that aim to simplify the process. The programs are located in the
-`tribbler/runners/` directory and may be executed from anywhere on your system.
+`p2/src/github.com/cmu440/tribbler/runners/` directory and may be executed from anywhere on your system.
 Each program is discussed individually below:
 
-#### `srunner`
+##### The `srunner` program
 
 The `srunner` (`StorageServer`-runner) program creates and runs an instance of your
 `StorageServer` implementation. Some example usage is provided below:
@@ -104,7 +104,7 @@ The `srunner` (`StorageServer`-runner) program creates and runs an instance of y
 Note that in the above example you do not need to specify a port for your slave storage servers.
 For additional usage instructions, please execute `./srunner -help` or consult the `srunner.go` source code.   
 
-#### `lrunner`
+##### The `lrunner` program
 
 The `lrunner` (`Libstore`-runner) program creates and runs an instance of your `Libstore`
 implementation. It enables you to execute `Libstore` methods from the command line, as shown
@@ -131,7 +131,7 @@ Note that the exact error messages that are output by the `lrunner` program may 
 depending on how your `Libstore` implementation. For additional usage instructions, please
 execute `./lrunner -help` or consult the `lrunner.go` source code.
 
-#### `trunner`
+##### The `trunner` program
 
 The `trunner` (`TribServer`-runner) program creates and runs an instance of your
 `TribServer` implementation. For usage instructions, please execute `./trunner -help` or consult the
@@ -139,7 +139,7 @@ The `trunner` (`TribServer`-runner) program creates and runs an instance of your
 you're `Libstore` implementation must function properly and one or more storage servers
 (i.e. `srunner` programs) must be running in the background.
    
-#### `crunner`
+##### The `crunner` program
 
 The `crunner` (`TribClient`-runner) program creates and runs an instance of the
 `TribClient` implementation we have provided as part of the starter code.
@@ -148,12 +148,13 @@ For usage instructions, please execute `./crunner -help` or consult the
 more Tribbler servers and storage servers beforehand so that the `TribClient`
 will have someone to communicate with.
 
-#### Staff-compiled binaries
+##### Staff-compiled binaries
 
-Last but not least, we have also provided pre-compiled binaries (i.e. each were compiled against our the course
-staff's reference solution) for each of the programs discussed above.
+Last but not least, we have also provided pre-compiled binaries (i.e. they were compiled against our own 
+reference solutions) for each of the programs discussed above.
 The binaries are located in the `p2/sols/` directory and have been compiled against both 64-bit Mac OS X
-and Linux machines.
+and Linux machines. Similar to the staff-compled binaries we provided in project 1,
+we hope these will help you test the individual components of your Tribbler system.
 
 ### Executing the official tests
 
@@ -167,7 +168,7 @@ they are being executed on a 64-bit Mac OS X or Linux machine). For example, to 
 ```
 
 Note that these bash scripts link against both your own implementations as well as the test
-code located in the `tribbler/tests/` directory. What's more, a few of these tests
+code located in the `p2/srcgithub.com/cmu440/tribbler/tests/` directory. What's more, a few of these tests
 will also run against the staff-solution binaries discussed above,
 thus enabling us to test the correctness of individual components of your system
 as opposed to your entire Tribbler system as a whole.
