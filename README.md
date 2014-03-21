@@ -93,7 +93,7 @@ The `srunner` (`StorageServer`-runner) program creates and runs an instance of y
 
 ```bash
 # Start a single master storage server on port 9009.
-./srunner -port=9009 -N=1
+./srunner -port=9009
 
 # Start the master on port 9009 and run two additional slaves.
 ./srunner -port=9009 -N=3
@@ -112,7 +112,7 @@ in the example below:
 
 ```bash
 # Create a one (or more) storage servers in the background.
-./srunner -port=9009 -N=1 &
+./srunner -port=9009 &
 
 # Execute Put("thom", "yorke")
 ./lrunner -port=9009 p thom yorke  
