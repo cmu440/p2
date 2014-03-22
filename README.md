@@ -3,7 +3,7 @@ p2
 
 This repository contains the starter code for project 2 (15-440, Spring 2014).
 These instructions assume you have set your `GOPATH` to point to the repository's
-root `p1/` directory.
+root `p2/` directory.
 
 This project was designed for, and tested on AFS cluster machines, though you may choose to
 write and build your code locally as well.
