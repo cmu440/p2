@@ -111,7 +111,7 @@ implementation. It enables you to execute `Libstore` methods from the command li
 in the example below:
 
 ```bash
-# Create a one (or more) storage servers in the background.
+# Create one (or more) storage servers in the background.
 ./srunner -port=9009 &
 
 # Execute Put("thom", "yorke")
