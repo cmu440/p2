@@ -8,6 +8,16 @@ import (
 	"github.com/cmu440/tribbler/rpc/storagerpc"
 )
 
+// LeaseMode is a debugging flag that determines how the Libstore should
+// request/handle leases.
+type LeaseMode int
+
+const (
+	Never  LeaseMode = iota // Never request leases.
+	Normal                  // Behave as normal.
+	Always                  // Always request leases.
+)
+
 // Libstore defines the set of methods that a TribServer can call on its
 // local cache.
 type Libstore interface {

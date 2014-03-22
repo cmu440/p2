@@ -25,7 +25,7 @@ type StorageServer interface {
 	Get(*storagerpc.GetArgs, *storagerpc.GetReply) error
 
 	// GetList retrieves the specified key from the data store and replies with
-	// the key's value and a lease if one was requested. If the key does not
+	// the key's list value and a lease if one was requested. If the key does not
 	// fall within the storage server's range, it should reply with status
 	// WrongServer. If the key is not found, it should reply with status
 	// KeyNotFound.

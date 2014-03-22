@@ -37,7 +37,7 @@ type TribServer interface {
 
 	// GetTribblesBySubscription retrieves a list of at most 100 tribbles posted by
 	// all users to which the specified UserID is subscribed in reverse chronological
-	// order (most recent first).
-	// Replies with status NoSuchUser if the specified UserID does not exist.
+	// order (most recent first). Replies with status NoSuchUser if the specified UserID
+	// does not exist.
 	GetTribblesBySubscription(args *tribrpc.GetTribblesArgs, reply *tribrpc.GetTribblesReply) error
 }
