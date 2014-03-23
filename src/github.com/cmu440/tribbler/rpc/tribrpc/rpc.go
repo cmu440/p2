@@ -27,7 +27,7 @@ type TribServer struct {
 //     tribServer := new(tribServer)
 //
 //     // Create the server socket that will listen for incoming RPCs.
-//     listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+//     listener, err := net.Listen("tcp", myHostPort)
 //     if err != nil {
 //         return nil, err
 //     }

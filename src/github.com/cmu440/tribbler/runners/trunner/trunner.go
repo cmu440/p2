@@ -5,6 +5,8 @@ package main
 import (
 	"flag"
 	"log"
+	"net"
+	"strconv"
 
 	"github.com/cmu440/tribbler/tribserver"
 )
@@ -22,7 +24,8 @@ func main() {
 	}
 
 	// Create and start the TribServer.
-	_, err := tribserver.NewTribServer(flag.Arg(0), *port)
+	hostPort := net.JoinHostPort("localhost", strconv.Itoa(*port))
+	_, err := tribserver.NewTribServer(flag.Arg(0), hostPort)
 	if err != nil {
 		log.Fatalln("Server could not be created:", err)
 	}

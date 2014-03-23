@@ -41,12 +41,6 @@ func init() {
 }
 
 func initTribServer(masterServerHostPort string, tribServerPort int) error {
-	//	l, err := net.Listen("tcp", tribServerHostPort)
-	//	if err != nil {
-	//		LOGE.Println("Failed to listen:", err)
-	//		return nil, err
-	//	}
-
 	tribServerHostPort := net.JoinHostPort("localhost", strconv.Itoa(tribServerPort))
 	proxyCounter, err := proxycounter.NewProxyCounter(masterServerHostPort, tribServerHostPort)
 	if err != nil {
@@ -54,19 +48,15 @@ func initTribServer(masterServerHostPort string, tribServerPort int) error {
 		return err
 	}
 	pc = proxyCounter
-
 	rpc.RegisterName("StorageServer", storagerpc.Wrap(pc))
-	//rpc.HandleHTTP()
-	//go http.Serve(l, nil)
 
 	// Create and start the TribServer.
-	tribServer, err := tribserver.NewTribServer(masterServerHostPort, tribServerPort)
+	tribServer, err := tribserver.NewTribServer(masterServerHostPort, tribServerHostPort)
 	if err != nil {
 		LOGE.Println("Failed to create TribServer:", err)
 		return err
 	}
 	ts = tribServer
-	//rpc.RegisterName("TribServer", tribrpc.Wrap(ts))
 	return nil
 }
 
