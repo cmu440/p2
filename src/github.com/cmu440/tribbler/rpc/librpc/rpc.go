@@ -5,6 +5,7 @@ package librpc
 
 import "github.com/cmu440/tribbler/rpc/storagerpc"
 
+// STAFF USE ONLY! Students should not use this interface in their code.
 type RemoteLeaseCallbacks interface {
 	RevokeLease(*storagerpc.RevokeLeaseArgs, *storagerpc.RevokeLeaseReply) error
 }
