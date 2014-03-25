@@ -616,15 +616,15 @@ func testCacheGetMemoryLeak() {
 	defer pc.OverrideLeaseSeconds(0)
 
 	var memstats runtime.MemStats
-	var initAlloc, midAlloc, finalAlloc uint64
+	var initAlloc, finalAlloc uint64
 	longValue := strings.Repeat("this sentence is 30 char long\n", 30)
 
-	// Run garbage collection and get memory stats
+	// Run garbage collection and get memory stats.
 	runtime.GC()
 	runtime.ReadMemStats(&memstats)
 	initAlloc = memstats.Alloc
 
-	// Cache a lot of data
+	// Cache a lot of data.
 	for i := 0; i < 10000; i++ {
 		key := fmt.Sprintf("keymemleakget:%d", i)
 		pc.Reset()
@@ -653,21 +653,24 @@ func testCacheGetMemoryLeak() {
 
 	runtime.GC()
 	runtime.ReadMemStats(&memstats)
-	midAlloc = memstats.Alloc
 
-	// Wait for data to expire and someone to cleanup
+	// Wait for data to expire and someone to cleanup.
 	time.Sleep(20 * time.Second)
 
-	// Run garbage collection and get memory stats
+	// Run garbage collection and get memory stats.
 	runtime.GC()
 	runtime.ReadMemStats(&memstats)
 	finalAlloc = memstats.Alloc
 
-	if finalAlloc < initAlloc || (finalAlloc-initAlloc) < 5000000 {
+	// The maximum number of bytes allowed to be allocated since the beginning
+	// of this test until now (currently 5,000,000).
+	const maxBytes = 5000000
+	if finalAlloc < initAlloc || (finalAlloc-initAlloc) < maxBytes {
 		fmt.Fprintln(output, "PASS")
 		passCount++
 	} else {
-		LOGE.Printf("FAIL: not cleaning cache - memory leak - init %d mid %d final %d\n", initAlloc, midAlloc, finalAlloc)
+		LOGE.Printf("FAIL: Libstore not cleaning expired/cached data (bytes still in use: %d, max allowed: %d)\n",
+			finalAlloc-initAlloc, maxBytes)
 		failCount++
 	}
 }
@@ -881,16 +884,15 @@ func testCacheGetListMemoryLeak() {
 
 	var memstats runtime.MemStats
 	var initAlloc uint64
-	var midAlloc uint64
 	var finalAlloc uint64
 	longValue := strings.Repeat("this sentence is 30 char long\n", 30)
 
-	// Run garbage collection and get memory stats
+	// Run garbage collection and get memory stats.
 	runtime.GC()
 	runtime.ReadMemStats(&memstats)
 	initAlloc = memstats.Alloc
 
-	// Cache a lot of data
+	// Cache a lot of data.
 	for i := 0; i < 10000; i++ {
 		key := fmt.Sprintf("keymemleakgetlist:%d", i)
 		pc.Reset()
@@ -919,21 +921,24 @@ func testCacheGetListMemoryLeak() {
 
 	runtime.GC()
 	runtime.ReadMemStats(&memstats)
-	midAlloc = memstats.Alloc
 
-	// Wait for data to expire and someone to cleanup
+	// Wait for data to expire and someone to cleanup.
 	time.Sleep(20 * time.Second)
 
-	// Run garbage collection and get memory stats
+	// Run garbage collection and get memory stats.
 	runtime.GC()
 	runtime.ReadMemStats(&memstats)
 	finalAlloc = memstats.Alloc
 
-	if finalAlloc < initAlloc || (finalAlloc-initAlloc) < 5000000 {
+	// The maximum number of bytes allowed to be allocated since the beginning
+	// of this test until now (currently 5,000,000).
+	const maxBytes = 5000000
+	if finalAlloc < initAlloc || (finalAlloc-initAlloc) < maxBytes {
 		fmt.Fprintln(output, "PASS")
 		passCount++
 	} else {
-		LOGE.Printf("FAIL: not cleaning cache - memory leak - init %d mid %d final %d\n", initAlloc, midAlloc, finalAlloc)
+		LOGE.Printf("FAIL: Libstore not cleaning expired/cached data (bytes still in use: %d, max allowed: %d)\n",
+			finalAlloc-initAlloc, maxBytes)
 		failCount++
 	}
 }
