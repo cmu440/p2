@@ -3,6 +3,7 @@
 
 package tribrpc
 
+// STAFF USE ONLY! Students should not use this interface in their code.
 type RemoteTribServer interface {
 	CreateUser(args *CreateUserArgs, reply *CreateUserReply) error
 	AddSubscription(args *SubscriptionArgs, reply *SubscriptionReply) error

@@ -3,6 +3,7 @@
 
 package storagerpc
 
+// STAFF USE ONLY! Students should not use this interface in their code.
 type RemoteStorageServer interface {
 	RegisterServer(*RegisterArgs, *RegisterReply) error
 	GetServers(*GetServersArgs, *GetServersReply) error
