@@ -53,7 +53,7 @@ function startStorageServers {
             STORAGE_SERVER_PID[$i]=$!
         done
     fi
-    sleep 5
+    sleep 4
 }
 
 function stopStorageServers {
@@ -73,7 +73,7 @@ function startTribServers {
         ${TRIB_SERVER} -port=${TRIB_PORT[$i]} "localhost:${STORAGE_PORT}" &> /dev/null &
         TRIB_SERVER_PID[$i]=$!
     done
-    sleep 5
+    sleep 4
 }
 
 function stopTribServers {
@@ -85,7 +85,9 @@ function stopTribServers {
 }
 
 function testStress {
+    echo "Starting ${#STORAGE_ID[@]} storage server(s)..."
     startStorageServers
+    echo "Starting ${M} Tribble server(s)..."
     startTribServers
     # Start stress clients
     C=0
@@ -101,6 +103,7 @@ function testStress {
             C=$((C + 1))
         done
     done
+    echo "Running ${C} client(s)..."
 
     # Check exit status.
     FAIL=0
@@ -122,6 +125,7 @@ function testStress {
     fi
     stopTribServers
     stopStorageServers
+    sleep 1
 }
 
 # Testing single client, single tribserver, single storageserver.

@@ -40,6 +40,13 @@ var statusMap = map[tribrpc.Status]string{
 	0:                        "Unknown",
 }
 
+var (
+	// Debugging information (counts the total number of operations performed).
+	gs, as, rs, gt, pt, gtbs int
+	// Set this to true to print debug information.
+	debug bool
+)
+
 func main() {
 	flag.Parse()
 	if flag.NArg() < 2 {
@@ -48,7 +55,7 @@ func main() {
 
 	client, err := tribclient.NewTribClient("localhost", *portnum)
 	if err != nil {
-		LOGE.Fatalf("FAIL: NewTribClient returned error '%s'\n", err)
+		LOGE.Fatalln("FAIL: NewTribClient returned error:", err)
 	}
 
 	user := flag.Arg(0)
@@ -63,7 +70,7 @@ func main() {
 
 	status, err := client.CreateUser(user)
 	if err != nil {
-		LOGE.Fatalf("FAIL: error when creating user %s\n", user)
+		LOGE.Fatalf("FAIL: error when creating userID '%s': %s\n", user, err)
 	}
 	if status != tribrpc.OK {
 		LOGE.Fatalln("FAIL: CreateUser returned error status", statusMap[status])
@@ -76,10 +83,37 @@ func main() {
 		rand.Seed(*seed)
 	}
 
+	cmds := make([]int, *numCmds)
 	for i := 0; i < *numCmds; i++ {
-		funcnum := rand.Intn(6)
+		cmds[i] = rand.Intn(6)
+		switch cmds[i] {
+		case GetSubscription:
+			gs++
+		case AddSubscription:
+			as++
+		case RemoveSubscription:
+			rs++
+		case GetTribbles:
+			gt++
+		case PostTribble:
+			pt++
+		case GetTribblesBySubscription:
+			gtbs++
+		}
+	}
 
-		switch funcnum {
+	if debug {
+		// Prints out the total number of operations that will be performed.
+		fmt.Println("GetSubscriptions:", gs)
+		fmt.Println("AddSubscription:", as)
+		fmt.Println("RemoveSubscription:", rs)
+		fmt.Println("GetTribbles:", gt)
+		fmt.Println("PostTribble:", pt)
+		fmt.Println("GetTribblesBySubscription:", gtbs)
+	}
+
+	for _, cmd := range cmds {
+		switch cmd {
 		case GetSubscription:
 			subscriptions, status, err := client.GetSubscriptions(user)
 			if err != nil {
