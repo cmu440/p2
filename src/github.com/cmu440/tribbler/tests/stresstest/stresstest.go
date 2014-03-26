@@ -14,6 +14,15 @@ import (
 	"github.com/cmu440/tribbler/tribclient"
 )
 
+const (
+	GetSubscription = iota
+	AddSubscription
+	RemoveSubscription
+	GetTribbles
+	PostTribble
+	GetTribblesBySubscription
+)
+
 var (
 	portnum  = flag.Int("port", 9010, "server port # to connect to")
 	clientId = flag.String("clientId", "0", "client id for user")
@@ -21,102 +30,126 @@ var (
 	seed     = flag.Int64("seed", 0, "seed for random number generator used to execute commands")
 )
 
-func init() {
-	log.SetFlags(log.Lshortfile | log.Lmicroseconds)
+var LOGE = log.New(os.Stderr, "", log.Lshortfile|log.Lmicroseconds)
+
+var statusMap = map[tribrpc.Status]string{
+	tribrpc.OK:               "OK",
+	tribrpc.NoSuchUser:       "NoSuchUser",
+	tribrpc.NoSuchTargetUser: "NoSuchTargetUser",
+	tribrpc.Exists:           "Exists",
+	0:                        "Unknown",
 }
 
 func main() {
 	flag.Parse()
 	if flag.NArg() < 2 {
-		log.Fatalln("Usage: ./stressclient <user> <numTargets>")
+		LOGE.Fatalln("Usage: ./stressclient <user> <numTargets>")
 	}
 
-	client, _ := tribclient.NewTribClient("localhost", *portnum)
+	client, err := tribclient.NewTribClient("localhost", *portnum)
+	if err != nil {
+		LOGE.Fatalf("FAIL: NewTribClient returned error '%s'\n", err)
+	}
 
 	user := flag.Arg(0)
 	userNum, err := strconv.Atoi(user)
 	if err != nil {
-		log.Fatalf("FAIL: user %s not an integer\n", user)
+		LOGE.Fatalf("FAIL: user %s not an integer\n", user)
 	}
 	numTargets, err := strconv.Atoi(flag.Arg(1))
 	if err != nil {
-		log.Fatalf("FAIL: numTargets invalid %s\n", flag.Arg(1))
+		LOGE.Fatalf("FAIL: numTargets invalid %s\n", flag.Arg(1))
 	}
 
-	client.CreateUser(user)
+	status, err := client.CreateUser(user)
 	if err != nil {
-		log.Fatalf("FAIL: error when creating user %s\n", user)
-		return
+		LOGE.Fatalf("FAIL: error when creating user %s\n", user)
+	}
+	if status != tribrpc.OK {
+		LOGE.Fatalln("FAIL: CreateUser returned error status", statusMap[status])
 	}
 
-	failed := false
 	tribIndex := 0
 	if *seed == 0 {
 		rand.Seed(time.Now().UnixNano())
 	} else {
 		rand.Seed(*seed)
 	}
+
 	for i := 0; i < *numCmds; i++ {
 		funcnum := rand.Intn(6)
 
 		switch funcnum {
-		case 0: //client.GetSubscription
+		case GetSubscription:
 			subscriptions, status, err := client.GetSubscriptions(user)
-			if err != nil || status == tribrpc.NoSuchUser {
-				failTest("error with GetSubscriptions")
+			if err != nil {
+				LOGE.Fatalf("FAIL: GetSubscriptions returned error '%s'\n", err)
 			}
-			failed = !validateSubscriptions(&subscriptions)
-		case 1: //client.AddSubscription
+			if status == 0 || status == tribrpc.NoSuchUser {
+				LOGE.Fatalf("FAIL: GetSubscriptions returned error status '%s'\n", statusMap[status])
+			}
+			if !validateSubscriptions(&subscriptions) {
+				LOGE.Fatalln("FAIL: failed while validating returned subscriptions")
+			}
+		case AddSubscription:
 			target := rand.Intn(numTargets)
 			status, err := client.AddSubscription(user, strconv.Itoa(target))
-			if err != nil || status == tribrpc.NoSuchUser {
-				failTest("error with AddSubscription")
+			if err != nil {
+				LOGE.Fatalf("FAIL: AddSubscription returned error '%s'\n", err)
 			}
-		case 2: //client.RemoveSubscription
+			if status == 0 || status == tribrpc.NoSuchUser {
+				LOGE.Fatalf("FAIL: AddSubscription returned error status '%s'\n", statusMap[status])
+			}
+		case RemoveSubscription:
 			target := rand.Intn(numTargets)
 			status, err := client.RemoveSubscription(user, strconv.Itoa(target))
-			if err != nil || status == tribrpc.NoSuchUser {
-				failTest("error with RemoveSubscription")
-			}
-		case 3: //client.GetTribbles
-			target := rand.Intn(numTargets)
-			tribbles, _, err := client.GetTribbles(strconv.Itoa(target))
 			if err != nil {
-				failTest("error with GetTribbles")
+				LOGE.Fatalf("FAIL: RemoveSubscription returned error '%s'\n", err)
 			}
-			failed = !validateTribbles(&tribbles, numTargets)
-		case 4: //client.PostTribble
+			if status == 0 || status == tribrpc.NoSuchUser {
+				LOGE.Fatalf("FAIL: RemoveSubscription returned error status '%s'\n", statusMap[status])
+			}
+		case GetTribbles:
+			target := rand.Intn(numTargets)
+			tribbles, status, err := client.GetTribbles(strconv.Itoa(target))
+			if err != nil {
+				LOGE.Fatalf("FAIL: GetTribbles returned error '%s'\n", err)
+			}
+			if status == 0 {
+				LOGE.Fatalf("FAIL: GetTribbles returned error status '%s'\n", statusMap[status])
+			}
+			if !validateTribbles(&tribbles, numTargets) {
+				LOGE.Fatalln("FAIL: failed while validating returned tribbles")
+			}
+		case PostTribble:
 			tribVal := userNum + tribIndex*numTargets
 			msg := fmt.Sprintf("%d;%s", tribVal, *clientId)
 			status, err := client.PostTribble(user, msg)
-			if err != nil || status == tribrpc.NoSuchUser {
-				failTest("error with PostTribble")
+			if err != nil {
+				LOGE.Fatalf("FAIL: PostTribble returned error '%s'\n", err)
+			}
+			if status == 0 || status == tribrpc.NoSuchUser {
+				LOGE.Fatalf("FAIL: PostTribble returned error status '%s'\n", statusMap[status])
 			}
 			tribIndex++
-		case 5: //client.GetTribblesBySubscription
+		case GetTribblesBySubscription:
 			tribbles, status, err := client.GetTribblesBySubscription(user)
-			if err != nil || status == tribrpc.NoSuchUser {
-				failTest("error with GetTribblesBySubscription")
+			if err != nil {
+				LOGE.Fatalf("FAIL: GetTribblesBySubscription returned error '%s'\n", err)
 			}
-			failed = !validateTribbles(&tribbles, numTargets)
-		}
-		if failed {
-			failTest("tribbler output invalid")
+			if status == 0 || status == tribrpc.NoSuchUser {
+				LOGE.Fatalf("FAIL: GetTribblesBySubscription returned error status '%s'\n", statusMap[status])
+			}
+			if !validateTribbles(&tribbles, numTargets) {
+				LOGE.Fatalln("FAIL: failed while validating returned tribbles")
+			}
 		}
 	}
-
-	fmt.Println("PASS")
 	os.Exit(7)
 }
 
-func failTest(msg string) {
-	log.Fatalln("FAIL:", msg)
-}
-
-// Check if there are any duplicates in the returned subscriptions
 func validateSubscriptions(subscriptions *[]string) bool {
 	subscriptionSet := make(map[string]bool, len(*subscriptions))
-
 	for _, subscription := range *subscriptions {
 		if subscriptionSet[subscription] == true {
 			return false
@@ -139,7 +172,6 @@ func validateTribbles(tribbles *[]tribrpc.Tribble, numTargets int) bool {
 			return false
 		}
 		userClientId := fmt.Sprintf("%s;%s", tribble.UserID, valAndId[1])
-
 		lastVal := userIdToLastVal[userClientId]
 		if val%numTargets == user && (lastVal == 0 || lastVal == val+numTargets) {
 			userIdToLastVal[userClientId] = val
