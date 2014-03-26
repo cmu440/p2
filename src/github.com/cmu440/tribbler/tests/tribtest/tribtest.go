@@ -32,13 +32,17 @@ var (
 	failCount int
 	pc        proxycounter.ProxyCounter
 	ts        tribserver.TribServer
-	LOGE      *log.Logger
 )
 
-func init() {
-	log.SetFlags(log.Lshortfile | log.Lmicroseconds)
-	LOGE = log.New(os.Stderr, "", log.Lshortfile|log.Lmicroseconds)
+var statusMap = map[tribrpc.Status]string{
+	tribrpc.OK:               "OK",
+	tribrpc.NoSuchUser:       "NoSuchUser",
+	tribrpc.NoSuchTargetUser: "NoSuchTargetUser",
+	tribrpc.Exists:           "Exists",
+	0:                        "Unknown",
 }
+
+var LOGE = log.New(os.Stderr, "", log.Lshortfile|log.Lmicroseconds)
 
 func initTribServer(masterServerHostPort string, tribServerPort int) error {
 	tribServerHostPort := net.JoinHostPort("localhost", strconv.Itoa(tribServerPort))
@@ -92,12 +96,12 @@ func checkLimits(rpcCountLimit, byteCountLimit uint32) bool {
 // Check error and status
 func checkErrorStatus(err error, status, expectedStatus tribrpc.Status) bool {
 	if err != nil {
-		LOGE.Println("FAIL: unexpected error returned")
+		LOGE.Println("FAIL: unexpected error returned:", err)
 		failCount++
 		return true
 	}
 	if status != expectedStatus {
-		LOGE.Printf("FAIL: incorrect status %d, expected status %d\n", status, expectedStatus)
+		LOGE.Printf("FAIL: incorrect status %s, expected status %s\n", statusMap[status], statusMap[expectedStatus])
 		failCount++
 		return true
 	}

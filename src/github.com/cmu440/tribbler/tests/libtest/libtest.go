@@ -36,16 +36,12 @@ var (
 	revokeConn *rpc.Client
 	passCount  int
 	failCount  int
-	LOGE       *log.Logger
 )
 
-func init() {
-	log.SetFlags(log.Lshortfile | log.Lmicroseconds)
-	LOGE = log.New(os.Stderr, "", log.Lshortfile|log.Lmicroseconds)
-}
+var LOGE = log.New(os.Stderr, "", log.Lshortfile|log.Lmicroseconds)
 
 // Initialize proxy and libstore
-func initLibstore(storage string, server string, myhostport string, alwaysLease bool) (net.Listener, error) {
+func initLibstore(storage, server, myhostport string, alwaysLease bool) (net.Listener, error) {
 	l, err := net.Listen("tcp", server)
 	if err != nil {
 		LOGE.Println("Failed to listen:", err)
@@ -154,7 +150,7 @@ func checkError(err error, expectError bool) bool {
 		}
 	} else {
 		if err != nil {
-			LOGE.Println("FAIL: unexpected error returned")
+			LOGE.Println("FAIL: unexpected error returned:", err)
 			failCount++
 			return true
 		}
@@ -168,7 +164,7 @@ func testNonexistentServer() {
 		fmt.Fprintln(output, "PASS")
 		passCount++
 	} else {
-		LOGE.Println("FAIL: libstore does not return nil when it cannot connect to nonexistent storage server")
+		LOGE.Println("FAIL: libstore does not return a non-nil error when it cannot connect to nonexistent storage server")
 		failCount++
 	}
 	cleanupLibstore(nil)
@@ -1087,9 +1083,6 @@ func main() {
 			fmt.Printf("Running %s:\n", t.name)
 			t.f()
 		}
-		// Give the current Listener some time to close before creating
-		// a new Libstore.
-		time.Sleep(time.Duration(500) * time.Millisecond)
 	}
 
 	_, err = initLibstore(flag.Arg(0), fmt.Sprintf("localhost:%d", *portnum), fmt.Sprintf("localhost:%d", *portnum), false)
