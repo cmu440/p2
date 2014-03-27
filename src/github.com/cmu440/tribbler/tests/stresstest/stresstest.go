@@ -176,6 +176,7 @@ func main() {
 			}
 		}
 	}
+	fmt.Println("PASS")
 	os.Exit(7)
 }
 
