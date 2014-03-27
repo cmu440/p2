@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -35,7 +34,6 @@ var (
 	numServer = flag.Int("N", 1, "(jtest only) total # of storage servers")
 	myID      = flag.Int("id", 1, "(jtest only) my id")
 	testRegex = flag.String("t", "", "test to run")
-	output    io.Writer
 	passCount int
 	failCount int
 	st        *storageTester
@@ -281,7 +279,7 @@ func testInitStorageServers() {
 	if checkErrorStatus(err, replyG.Status, storagerpc.WrongServer) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -334,7 +332,7 @@ func testPutGet() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -392,7 +390,7 @@ func testAppendGetRemoveList() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -433,7 +431,7 @@ func testUpdateWithoutLease() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -470,7 +468,7 @@ func testUpdateBeforeLeaseExpire() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -510,7 +508,7 @@ func testUpdateAfterLeaseExpire() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -608,7 +606,7 @@ func testDelayedRevokeWithoutBlocking() {
 	if delayedRevoke(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -650,7 +648,7 @@ func testDelayedRevokeWithLeaseRequest1() {
 	if delayedRevoke(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -694,7 +692,7 @@ func testDelayedRevokeWithLeaseRequest2() {
 	if delayedRevoke(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -735,7 +733,7 @@ func testDelayedRevokeWithUpdate1() {
 	if delayedRevoke(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -783,7 +781,7 @@ func testDelayedRevokeWithUpdate2() {
 	if delayedRevoke(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -833,7 +831,7 @@ func testDelayedRevokeWithUpdate3() {
 	if delayedRevoke(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -874,7 +872,7 @@ func testUpdateListWithoutLease() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -915,7 +913,7 @@ func testUpdateListBeforeLeaseExpire() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -959,7 +957,7 @@ func testUpdateListAfterLeaseExpire() {
 		return
 	}
 
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -1057,7 +1055,7 @@ func testDelayedRevokeListWithoutBlocking() {
 	if delayedRevokeList(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -1102,7 +1100,7 @@ func testDelayedRevokeListWithLeaseRequest1() {
 	if delayedRevokeList(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -1149,7 +1147,7 @@ func testDelayedRevokeListWithLeaseRequest2() {
 	if delayedRevokeList(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -1188,7 +1186,7 @@ func testDelayedRevokeListWithUpdate1() {
 	if delayedRevokeList(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -1234,7 +1232,7 @@ func testDelayedRevokeListWithUpdate2() {
 	if delayedRevokeList(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -1282,15 +1280,11 @@ func testDelayedRevokeListWithUpdate3() {
 	if delayedRevokeList(key1, f) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
 func main() {
-	output = os.Stderr
-	passCount = 0
-	failCount = 0
-
 	jtests := []testFunc{{"testInitStorageServers", testInitStorageServers}}
 	btests := []testFunc{
 		{"testPutGet", testPutGet},

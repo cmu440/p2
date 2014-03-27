@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -27,7 +26,6 @@ type testFunc struct {
 var (
 	port      = flag.Int("port", 9010, "TribServer port number")
 	testRegex = flag.String("t", "", "test to run")
-	output    io.Writer
 	passCount int
 	failCount int
 	pc        proxycounter.ProxyCounter
@@ -218,7 +216,7 @@ func testCreateUserValid() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -233,7 +231,7 @@ func testCreateUserDuplicate() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -248,7 +246,7 @@ func testAddSubscriptionInvalidUser() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -263,7 +261,7 @@ func testAddSubscriptionInvalidTargetUser() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -279,7 +277,7 @@ func testAddSubscriptionValid() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -296,7 +294,7 @@ func testAddSubscriptionDuplicate() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -311,7 +309,7 @@ func testRemoveSubscriptionInvalidUser() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -328,7 +326,7 @@ func testRemoveSubscriptionValid() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -345,7 +343,7 @@ func testRemoveSubscriptionMissingTarget() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -359,7 +357,7 @@ func testGetSubscriptionInvalidUser() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -383,7 +381,7 @@ func testGetSubscriptionValid() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -397,7 +395,7 @@ func testPostTribbleInvalidUser() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -412,7 +410,7 @@ func testPostTribbleValid() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -426,7 +424,7 @@ func testGetTribblesInvalidUser() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -444,7 +442,7 @@ func testGetTribblesZeroTribbles() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -469,7 +467,7 @@ func testGetTribblesFewTribbles() {
 	if checkLimits(50, 5000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -495,7 +493,7 @@ func testGetTribblesManyTribbles() {
 	if checkLimits(200, 30000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -509,7 +507,7 @@ func testGetTribblesBySubscriptionInvalidUser() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -528,7 +526,7 @@ func testGetTribblesBySubscriptionNoSubscriptions() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -548,7 +546,7 @@ func testGetTribblesBySubscriptionZeroTribbles() {
 	if checkLimits(10, 1000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -577,7 +575,7 @@ func testGetTribblesBySubscriptionFewTribbles() {
 	if checkLimits(20, 2000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -612,7 +610,7 @@ func testGetTribblesBySubscriptionManyTribbles() {
 	if checkLimits(200, 30000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -647,7 +645,7 @@ func testGetTribblesBySubscriptionManyTribbles2() {
 	if checkLimits(200, 30000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
@@ -703,14 +701,11 @@ func testGetTribblesBySubscriptionManyTribbles3() {
 	if checkLimits(200, 200000) {
 		return
 	}
-	fmt.Fprintln(output, "PASS")
+	fmt.Println("PASS")
 	passCount++
 }
 
 func main() {
-	output = os.Stderr
-	passCount = 0
-	failCount = 0
 	tests := []testFunc{
 		{"testCreateUserValid", testCreateUserValid},
 		{"testCreateUserDuplicate", testCreateUserDuplicate},
