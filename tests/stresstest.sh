@@ -53,7 +53,7 @@ function startStorageServers {
             STORAGE_SERVER_PID[$i]=$!
         done
     fi
-    sleep 4
+    sleep 5
 }
 
 function stopStorageServers {
@@ -73,7 +73,7 @@ function startTribServers {
         ${TRIB_SERVER} -port=${TRIB_PORT[$i]} "localhost:${STORAGE_PORT}" &> /dev/null &
         TRIB_SERVER_PID[$i]=$!
     done
-    sleep 4
+    sleep 5
 }
 
 function stopTribServers {
