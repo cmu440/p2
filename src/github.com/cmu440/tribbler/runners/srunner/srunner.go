@@ -3,10 +3,12 @@
 package main
 
 import (
+	crand "crypto/rand"
 	"flag"
 	"log"
+	"math"
+	"math/big"
 	"math/rand"
-	"time"
 
 	"github.com/cmu440/tribbler/storageserver"
 )
@@ -34,7 +36,8 @@ func main() {
 	// If nodeID is 0, then assign a random 32-bit integer instead.
 	randID := uint32(*nodeID)
 	if randID == 0 {
-		rand.Seed(time.Now().Unix())
+		randint, _ := crand.Int(crand.Reader, big.NewInt(math.MaxInt64))
+		rand.Seed(randint.Int64())
 		randID = rand.Uint32()
 	}
 
