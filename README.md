@@ -164,7 +164,7 @@ they are being executed on a 64-bit Mac OS X or Linux machine). For example, to 
 `libtest.sh` test, simply execute the following:
 
 ```bash
-./libtest.sh
+$GOPATH/tests/libtest.sh
 ```
 
 Note that these bash scripts link against both your own implementations as well as the test
