@@ -1079,6 +1079,9 @@ func main() {
 			fmt.Printf("Running %s:\n", t.name)
 			t.f()
 		}
+		// Give the current Listener some time to close before creating
+		// a new Libstore.
+		time.Sleep(time.Duration(500) * time.Millisecond)
 	}
 
 	_, err = initLibstore(flag.Arg(0), fmt.Sprintf("localhost:%d", *portnum), fmt.Sprintf("localhost:%d", *portnum), false)
