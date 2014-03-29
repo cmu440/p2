@@ -25,7 +25,7 @@ fi
 # Pick random port between [10000, 20000).
 STORAGE_PORT=$(((RANDOM % 10000) + 10000))
 STORAGE_SERVER=$GOPATH/sols/$GOOS/srunner
-LIB_CLIENT=$GOPATH/bin/lrunner
+LRUNNER=$GOPATH/bin/lrunner
 
 function startStorageServers {
     N=${#STORAGE_ID[@]}
@@ -64,7 +64,7 @@ function testDelayedStart {
     sleep 5
 
     # Run lrunner.
-    ${LIB_CLIENT} -port=${STORAGE_PORT} p "key:" value &> /dev/null &
+    ${LRUNNER} -port=${STORAGE_PORT} p "key:" value &> /dev/null &
     sleep 3
 
     # Start second storage server.
@@ -74,7 +74,7 @@ function testDelayedStart {
     sleep 5
 
     # Run lrunner.
-    PASS=`${LIB_CLIENT} -port=${STORAGE_PORT} g "key:" | grep value | wc -l`
+    PASS=`${LRUNNER} -port=${STORAGE_PORT} g "key:" | grep value | wc -l`
     if [ "$PASS" -eq 1 ]
     then
         echo "PASS"
@@ -95,8 +95,8 @@ function testRouting {
     startStorageServers
     for KEY in "${KEYS[@]}"
     do
-        ${LIB_CLIENT} -port=${STORAGE_PORT} p ${KEY} value > /dev/null
-        PASS=`${LIB_CLIENT} -port=${STORAGE_PORT} g ${KEY} | grep value | wc -l`
+        ${LRUNNER} -port=${STORAGE_PORT} p ${KEY} value > /dev/null
+        PASS=`${LRUNNER} -port=${STORAGE_PORT} g ${KEY} | grep value | wc -l`
         if [ "$PASS" -ne 1 ]
         then
             break
