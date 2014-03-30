@@ -181,7 +181,7 @@ after you've analyzed its source code), please don't hesitate to ask us a questi
 To submit your code to Autolab, create a `tribbler.tar` file containing your implementation as follows:
 
 ```sh
-cd $GOPATH/p2/src/github.com/cmu440
+cd $GOPATH/src/github.com/cmu440
 tar -cvf tribbler.tar tribbler/
 ```
 
