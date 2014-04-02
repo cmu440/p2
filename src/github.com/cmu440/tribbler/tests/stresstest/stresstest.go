@@ -68,6 +68,7 @@ func main() {
 		LOGE.Fatalf("FAIL: numTargets invalid %s\n", flag.Arg(1))
 	}
 
+	time.Sleep(1 * time.Second)
 	_, err = client.CreateUser(user)
 	if err != nil {
 		LOGE.Fatalf("FAIL: error when creating userID '%s': %s\n", user, err)
