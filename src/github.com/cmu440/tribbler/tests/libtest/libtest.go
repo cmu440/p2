@@ -611,7 +611,7 @@ func testCacheGetMemoryLeak() {
 
 	var memstats runtime.MemStats
 	var initAlloc, finalAlloc uint64
-	longValue := strings.Repeat("this sentence is 30 char long\n", 30)
+	longValue := strings.Repeat("this sentence is 30 char long\n", 3000)
 
 	// Run garbage collection and get memory stats.
 	runtime.GC()
@@ -619,7 +619,7 @@ func testCacheGetMemoryLeak() {
 	initAlloc = memstats.Alloc
 
 	// Cache a lot of data.
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1000; i++ {
 		key := fmt.Sprintf("keymemleakget:%d", i)
 		pc.Reset()
 		forceCacheGet(key, longValue)
@@ -879,7 +879,7 @@ func testCacheGetListMemoryLeak() {
 	var memstats runtime.MemStats
 	var initAlloc uint64
 	var finalAlloc uint64
-	longValue := strings.Repeat("this sentence is 30 char long\n", 30)
+	longValue := strings.Repeat("this sentence is 30 char long\n", 3000)
 
 	// Run garbage collection and get memory stats.
 	runtime.GC()
@@ -887,7 +887,7 @@ func testCacheGetListMemoryLeak() {
 	initAlloc = memstats.Alloc
 
 	// Cache a lot of data.
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1000; i++ {
 		key := fmt.Sprintf("keymemleakgetlist:%d", i)
 		pc.Reset()
 		forceCacheGetList(key, longValue)
